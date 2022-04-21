@@ -1,4 +1,4 @@
-const { withEntitlementsPlist, withInfoPlist, withAndroidManifest } = require('@expo/config-plugins');
+const { withInfoPlist, withAndroidManifest } = require('@expo/config-plugins');
 
 const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to use the camera';
 const MIC_USAGE = 'Allow $(PRODUCT_NAME) to use the microphone';
@@ -38,7 +38,11 @@ const withTwilioVideoWebRTC = (
     const usesFeatures = config.modResults.manifest['uses-feature'] || [];
 
     permissions.forEach((permission) => {
-      usesPermissions.push(permission);
+      usesPermissions.push({
+        $: {
+          'android:name': permission
+        }
+      });
     });
     features.forEach((feature) => {
       usesFeatures.push({
