@@ -207,14 +207,17 @@ const withTwilioVideoWebRTC = (
     const usesPermissions = config.modResults.manifest['uses-permission'] || [];
     const usesFeatures = config.modResults.manifest['uses-feature'] || [];
 
-    permissions.forEach((permission) => {
+    const existentPermissions = usesPermissions.map(permission => permission['$']['android:name']);
+    const existentFeatures = usesFeatures.map(feature => feature['$']['android:name']);
+
+    permissions.filter(permission => !existentPermissions.includes(permission)).forEach((permission) => {
       usesPermissions.push({
         $: {
           'android:name': permission
         }
       });
     });
-    features.forEach((feature) => {
+    features.filter(feature => !existentFeatures.includes(feature)).forEach((feature) => {
       usesFeatures.push({
         $: {
           'android:name': feature,
@@ -255,13 +258,15 @@ const withTwilioVideoWebRTC = (
       );
       const contents = fs.readFileSync(filePath, "utf-8");
 
-      const newContent = [
-        "\n-keep class org.webrtc.** { *; }",
+      const rulesToAdd = [
+        "-keep class org.webrtc.** { *; }",
         "-keep class com.twilio.** { *; }",
-        "-keep class tvi.webrtc.** { *; }\n",
-      ].join("\n");
+        "-keep class tvi.webrtc.** { *; }",
+      ].filter(rule => !contents.includes(rule)).join("\n");
 
-      fs.writeFileSync(filePath, `${contents}${newContent}`);
+      if(rulesToAdd.length > 0) {
+        fs.writeFileSync(filePath, `${contents}\n${rulesToAdd}\n`);
+      }
 
       return config;
     },
