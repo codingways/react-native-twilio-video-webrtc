@@ -23,30 +23,34 @@ const withTwilioVideoWebRTC = (
   })
 
   config = withAndroidManifest(config, (config) => {
-    config.modResults.usesPermissions = config.modResults.usesPermissions || [];
-    config.modResults.usesPermissions.push('android.permission.CAMERA');
-    config.modResults.usesPermissions.push('android.permission.MODIFY_AUDIO_SETTINGS');
-    config.modResults.usesPermissions.push('android.permission.RECORD_AUDIO');
+    const permissions = [
+      'android.permission.CAMERA',
+      'android.permission.RECORD_AUDIO',
+      'android.permission.MODIFY_AUDIO_SETTINGS'
+    ];
+    const features = [
+      'android.hardware.camera',
+      'android.hardware.camera.autofocus',
+      'android.hardware.microphone'
+    ];
 
-    config.modResults.usesFeatures = config.modResults.usesFeatures || [];
-    config.modResults.usesFeatures.push({
-      $: {
-        'android:name': 'android.hardware.camera',
-        'android:required': 'false',
-      }
+    const usesPermissions = config.modResults.manifest['uses-permission'] || [];
+    const usesFeatures = config.modResults.manifest['uses-feature'] || [];
+
+    permissions.forEach((permission) => {
+      usesPermissions.push(permission);
     });
-    config.modResults.usesFeatures.push({
-      $: {
-        'android:name': 'android.hardware.camera.autofocus',
-        'android:required': 'false',
-      }
+    features.forEach((feature) => {
+      usesFeatures.push({
+        $: {
+          'android:name': feature,
+          'android:required': 'false'
+        }
+      });
     });
-    config.modResults.usesFeatures.push({
-      $: {
-        'android:name': 'android.hardware.microphone',
-        'android:required': 'false',
-      }
-    });
+
+    config.modResults.manifest['uses-permission'] = usesPermissions;
+    config.modResults.manifest['uses-feature'] = usesFeatures;
 
     return config;
   });
