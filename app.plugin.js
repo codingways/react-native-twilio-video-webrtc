@@ -3,15 +3,11 @@ const {
   withAndroidManifest,
   withDangerousMod,
 } = require('@expo/config-plugins');
-const {
-  mergeContents,
-} = require("@expo/config-plugins/build/utils/generateCode");
 const fs = require("fs");
 const path = require("path");
 
 const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to use the camera';
 const MIC_USAGE = 'Allow $(PRODUCT_NAME) to use the microphone';
-
 
 const withTwilioVideoWebRTC = (
   config,
